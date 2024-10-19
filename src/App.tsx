@@ -26,10 +26,39 @@ const Title = styled.h1`
   color: #333;
 `;
 
-const FileInput = styled.input`
-  margin-bottom: 20px;
+const FileInputWrapper = styled.div`
+  position: relative;
+  display: inline-block;
 `;
+const StyledFileInput = styled.input`
+  display: none;
+`;
+export const ButtonTitle = styled.span`
+  font-family: Montserrat;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 20.72px;
+  text-align: center;
+`;
+const StyledButton = styled.button`
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  background-color: #2f4f4f;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
 
+  &:hover {
+    opacity: 0.7;
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+  }
+`;
 const Table = styled.table`
   width: 100%;
   border-collapse: collapse;
@@ -44,15 +73,36 @@ const TableCell = styled.td`
   border: 1px solid #ddd;
   padding: 8px;
 `;
+export const FileTitle = styled.h2`
+  font-family: Montserrat;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 24.38px;
+  text-align: left;
+  color: #838383;
+  padding-bottom: 8px;
+  padding-top: 8px;
 
+  @media (max-width: 1200px) {
+    text-align: center;
+  }
+`;
 const FileUpload: React.FC<{
   onFileChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   fileName?: string | null;
 }> = ({ onFileChange, fileName }) => (
-  <>
-    <FileInput type="file" accept=".xlsx" onChange={onFileChange} />
-    {fileName && <p>Вы загружали файл: {fileName}</p>}
-  </>
+  <FileInputWrapper>
+    <StyledFileInput
+      type="file"
+      accept=".xlsx"
+      onChange={onFileChange}
+      id="file-upload"
+    />
+    <StyledButton as="label" htmlFor="file-upload">
+      <ButtonTitle>Выберите файл</ButtonTitle>
+    </StyledButton>
+    {fileName && <FileTitle>Вы загружали файл: {fileName}</FileTitle>}
+  </FileInputWrapper>
 );
 
 const DataTable: React.FC<{ data: VacationPay[] }> = ({ data }) => (
