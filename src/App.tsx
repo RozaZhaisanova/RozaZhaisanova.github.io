@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import * as XLSX from "xlsx";
 
 interface SalaryData {
-  ФИО: string;
+  ФИО?: string;
   Год: number;
   Месяц: number;
   ЗП: number;
@@ -29,8 +29,7 @@ const App: React.FC = () => {
       const worksheet = workbook.Sheets[sheetName];
       const jsonData: SalaryData[] = XLSX.utils.sheet_to_json(worksheet);
 
-      // Проверка структуры данных
-      if (!jsonData.length || !jsonData[0].ФИО || !jsonData[0].ЗП) {
+      if (!jsonData.length || !jsonData[0].Год || !jsonData[0].ЗП) {
         console.error("Неверная структура данных");
         return;
       }
@@ -41,25 +40,32 @@ const App: React.FC = () => {
   };
 
   const processSalaryData = (data: SalaryData[]) => {
-    const aggregatedData: {
-      [key: string]: { totalEarnings: number; count: number };
-    } = {};
+    const aggregatedData: { [key: string]: { totalEarnings: number } } = {};
+    let lastName = "";
 
-    data.forEach(({ ФИО, ЗП }) => {
-      if (!ФИО || isNaN(ЗП)) return;
-      if (!aggregatedData[ФИО]) {
-        aggregatedData[ФИО] = { totalEarnings: 0, count: 0 };
+    data.forEach(({ ФИО, Год, ЗП }) => {
+      if (!Год || isNaN(ЗП)) return;
+
+      if (ФИО) {
+        lastName = ФИО;
       }
-      aggregatedData[ФИО].totalEarnings += ЗП;
-      aggregatedData[ФИО].count += 1;
+
+      const key = `${lastName}-${Год}`;
+      if (!aggregatedData[key]) {
+        aggregatedData[key] = { totalEarnings: 0 };
+      }
+      aggregatedData[key].totalEarnings += ЗП;
     });
 
     const vacationPayData: VacationPay[] = Object.entries(aggregatedData).map(
-      ([name, { totalEarnings }]) => ({
-        name,
-        totalEarnings,
-        vacationPay: totalEarnings * 0.1, // Предположим, что отпускные составляют 10% от общего заработка
-      })
+      ([key, { totalEarnings }]) => {
+        const name = key.split("-")[0];
+        return {
+          name,
+          totalEarnings,
+          vacationPay: totalEarnings * 0.1,
+        };
+      }
     );
 
     setData(vacationPayData);
@@ -74,7 +80,7 @@ const App: React.FC = () => {
           <thead>
             <tr>
               <th>ФИО</th>
-              <th>Общий заработок</th>
+              <th>Общий заработок за год</th>
               <th>Размер отпускных</th>
             </tr>
           </thead>
