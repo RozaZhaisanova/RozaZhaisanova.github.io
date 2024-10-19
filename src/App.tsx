@@ -77,10 +77,15 @@ export const FileTitle = styled.h2`
   color: #838383;
   padding-bottom: 8px;
   padding-top: 8px;
-
-  @media (max-width: 1200px) {
-    text-align: center;
-  }
+`;
+export const ErrMsgTitle = styled.h2`
+  font-family: Montserrat;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 24.38px;
+  color: #b8110b;
+  padding-bottom: 8px;
+  padding-top: 8px;
 `;
 const FileUpload: React.FC<{
   onFileChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
@@ -206,9 +211,11 @@ const App: React.FC = () => {
   return (
     <AppContainer>
       {errorMessage ? (
-        errorMessage && (
-          <div style={{ color: "red", margin: "10px 0" }}>{errorMessage}</div>
-        )
+        <>
+          <Title>Расчет отпускных</Title>
+          <ErrMsgTitle>{errorMessage}</ErrMsgTitle>
+          <FileUpload onFileChange={handleFileChange} fileName={fileName} />
+        </>
       ) : (
         <>
           <Title>Расчет отпускных</Title>
