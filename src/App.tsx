@@ -53,11 +53,6 @@ const StyledButton = styled.button`
   &:hover {
     opacity: 0.7;
   }
-
-  &:focus {
-    outline: none;
-    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-  }
 `;
 const Table = styled.table`
   width: 100%;
@@ -132,8 +127,10 @@ const App: React.FC = () => {
     return savedData ? JSON.parse(savedData) : [];
   });
   const [fileName, setFileName] = useState<string | null>(null);
-
+  const [errorMessage, setErrorMessage] = useState("");
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setErrorMessage("");
+
     const file = event.target.files?.[0];
     if (!file) return;
 
@@ -147,7 +144,7 @@ const App: React.FC = () => {
       const jsonData: SalaryData[] = XLSX.utils.sheet_to_json(worksheet);
 
       if (!jsonData.length || !jsonData[0].Год || !jsonData[0].ЗП) {
-        console.error("Неверная структура данных");
+        setErrorMessage("Неверная структура данных");
         return;
       }
 
@@ -181,7 +178,9 @@ const App: React.FC = () => {
         return {
           name,
           totalEarnings,
-          vacationPay: totalEarnings * 0.1,
+          vacationPay: parseFloat(
+            ((totalEarnings / 12 / 29.3) * 28).toFixed(4)
+          ),
         };
       }
     );
@@ -206,9 +205,17 @@ const App: React.FC = () => {
 
   return (
     <AppContainer>
-      <Title>Расчет отпускных</Title>
-      <FileUpload onFileChange={handleFileChange} fileName={fileName} />
-      {data.length > 0 && <DataTable data={data} />}
+      {errorMessage ? (
+        errorMessage && (
+          <div style={{ color: "red", margin: "10px 0" }}>{errorMessage}</div>
+        )
+      ) : (
+        <>
+          <Title>Расчет отпускных</Title>
+          <FileUpload onFileChange={handleFileChange} fileName={fileName} />
+          {data.length > 0 && <DataTable data={data} />}
+        </>
+      )}
     </AppContainer>
   );
 };
