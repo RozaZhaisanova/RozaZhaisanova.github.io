@@ -20,9 +20,11 @@ const App: React.FC = () => {
     return savedData ? JSON.parse(savedData) : [];
   });
   const [fileName, setFileName] = useState<string | null>(null);
+
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
+
     setFileName(file.name);
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -36,6 +38,7 @@ const App: React.FC = () => {
         console.error("Неверная структура данных");
         return;
       }
+
       localStorage.setItem("fileName", file.name);
       processSalaryData(jsonData);
     };
@@ -47,7 +50,7 @@ const App: React.FC = () => {
     let lastName = "";
 
     data.forEach(({ ФИО, Год, ЗП }) => {
-      if (!Год || isNaN(ЗП)) return;
+      if (!Год || ЗП === undefined || isNaN(ЗП)) return;
 
       if (ФИО) {
         lastName = ФИО;
@@ -72,7 +75,6 @@ const App: React.FC = () => {
     );
 
     setData(vacationPayData);
-
     localStorage.setItem("vacationPayData", JSON.stringify(vacationPayData));
   };
 
@@ -80,12 +82,13 @@ const App: React.FC = () => {
     const data = localStorage.getItem("vacationPayData");
     if (data) {
       const vacationPayData = JSON.parse(data);
-      setData(vacationPayData);
+      if (Array.isArray(vacationPayData)) {
+        setData(vacationPayData);
+      }
     }
     const filesName = localStorage.getItem("fileName");
     if (filesName) {
-      const name = filesName;
-      setFileName(name);
+      setFileName(filesName);
     }
   }, []);
 
@@ -104,8 +107,8 @@ const App: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {data.map((item, index) => (
-              <tr key={index}>
+            {data.map((item) => (
+              <tr key={`${item.name}-${item.totalEarnings}`}>
                 <td>{item.name}</td>
                 <td>{item.totalEarnings}</td>
                 <td>{item.vacationPay}</td>
