@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import * as XLSX from "xlsx";
+import styled from "styled-components";
 
 interface SalaryData {
   ФИО?: string;
@@ -13,6 +14,67 @@ interface VacationPay {
   totalEarnings: number;
   vacationPay: number;
 }
+
+const AppContainer = styled.div`
+  padding: 20px;
+  max-width: 800px;
+  margin: auto;
+  text-align: center;
+`;
+
+const Title = styled.h1`
+  color: #333;
+`;
+
+const FileInput = styled.input`
+  margin-bottom: 20px;
+`;
+
+const Table = styled.table`
+  width: 100%;
+  border-collapse: collapse;
+`;
+
+const TableHeader = styled.th`
+  background-color: #f2f2f2;
+  padding: 10px;
+`;
+
+const TableCell = styled.td`
+  border: 1px solid #ddd;
+  padding: 8px;
+`;
+
+const FileUpload: React.FC<{
+  onFileChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  fileName?: string | null;
+}> = ({ onFileChange, fileName }) => (
+  <>
+    <FileInput type="file" accept=".xlsx" onChange={onFileChange} />
+    {fileName && <p>Вы загружали файл: {fileName}</p>}
+  </>
+);
+
+const DataTable: React.FC<{ data: VacationPay[] }> = ({ data }) => (
+  <Table>
+    <thead>
+      <tr>
+        <TableHeader>ФИО</TableHeader>
+        <TableHeader>Общий заработок за год</TableHeader>
+        <TableHeader>Размер отпускных</TableHeader>
+      </tr>
+    </thead>
+    <tbody>
+      {data.map((item) => (
+        <tr key={`${item.name}-${item.totalEarnings}`}>
+          <TableCell>{item.name}</TableCell>
+          <TableCell>{item.totalEarnings}</TableCell>
+          <TableCell>{item.vacationPay}</TableCell>
+        </tr>
+      ))}
+    </tbody>
+  </Table>
+);
 
 const App: React.FC = () => {
   const [data, setData] = useState<VacationPay[]>(() => {
@@ -93,31 +155,11 @@ const App: React.FC = () => {
   }, []);
 
   return (
-    <div>
-      <h1>Расчет отпускных</h1>
-      <input type="file" accept=".xlsx" onChange={handleFileChange} />
-      {fileName && <p>Вы загружали файл: {fileName}</p>}
-      {data.length > 0 && (
-        <table>
-          <thead>
-            <tr>
-              <th>ФИО</th>
-              <th>Общий заработок за год</th>
-              <th>Размер отпускных</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.map((item) => (
-              <tr key={`${item.name}-${item.totalEarnings}`}>
-                <td>{item.name}</td>
-                <td>{item.totalEarnings}</td>
-                <td>{item.vacationPay}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
-    </div>
+    <AppContainer>
+      <Title>Расчет отпускных</Title>
+      <FileUpload onFileChange={handleFileChange} fileName={fileName} />
+      {data.length > 0 && <DataTable data={data} />}
+    </AppContainer>
   );
 };
 
