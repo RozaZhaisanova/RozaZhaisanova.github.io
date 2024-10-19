@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import * as XLSX from "xlsx";
 
 interface SalaryData {
@@ -15,12 +15,15 @@ interface VacationPay {
 }
 
 const App: React.FC = () => {
-  const [data, setData] = useState<VacationPay[]>([]);
-
+  const [data, setData] = useState<VacationPay[]>(() => {
+    const savedData = localStorage.getItem("vacationPayData");
+    return savedData ? JSON.parse(savedData) : [];
+  });
+  const [fileName, setFileName] = useState<string | null>(null);
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
-
+    setFileName(file.name);
     const reader = new FileReader();
     reader.onload = (e) => {
       const arrayBuffer = e.target?.result as ArrayBuffer;
@@ -33,7 +36,7 @@ const App: React.FC = () => {
         console.error("Неверная структура данных");
         return;
       }
-
+      localStorage.setItem("fileName", file.name);
       processSalaryData(jsonData);
     };
     reader.readAsArrayBuffer(file);
@@ -69,12 +72,28 @@ const App: React.FC = () => {
     );
 
     setData(vacationPayData);
+
+    localStorage.setItem("vacationPayData", JSON.stringify(vacationPayData));
   };
+
+  useEffect(() => {
+    const data = localStorage.getItem("vacationPayData");
+    if (data) {
+      const vacationPayData = JSON.parse(data);
+      setData(vacationPayData);
+    }
+    const filesName = localStorage.getItem("fileName");
+    if (filesName) {
+      const name = filesName;
+      setFileName(name);
+    }
+  }, []);
 
   return (
     <div>
       <h1>Расчет отпускных</h1>
       <input type="file" accept=".xlsx" onChange={handleFileChange} />
+      {fileName && <p>Вы загружали файл: {fileName}</p>}
       {data.length > 0 && (
         <table>
           <thead>
