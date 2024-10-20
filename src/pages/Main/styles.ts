@@ -7,10 +7,6 @@ export const AppContainer = styled.div`
   text-align: center;
 `;
 
-export const Title = styled.h1`
-  color: #333;
-`;
-
 export const ErrMsgTitle = styled.h2`
   font-family: Montserrat;
   font-size: 20px;

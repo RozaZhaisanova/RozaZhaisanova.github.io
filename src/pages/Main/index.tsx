@@ -3,7 +3,7 @@ import * as XLSX from "xlsx";
 import { SalaryData, VacationPay } from "../../interfaces";
 import { DataTable } from "../../components/DataTable";
 import { FileUpload } from "../../components/FileUpload";
-import { AppContainer, Title, ErrMsgTitle } from "./styles";
+import { AppContainer, ErrMsgTitle } from "./styles";
 
 export const Main: React.FC = () => {
   const [data, setData] = useState<VacationPay[]>(() => {
@@ -11,7 +11,7 @@ export const Main: React.FC = () => {
     return savedData ? JSON.parse(savedData) : [];
   });
   const [fileName, setFileName] = useState<string | null>(null);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState<string>("");
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setErrorMessage("");
 
@@ -91,13 +91,13 @@ export const Main: React.FC = () => {
     <AppContainer>
       {errorMessage ? (
         <>
-          <Title>Расчет отпускных</Title>
+          <h1>Расчет отпускных</h1>
           <ErrMsgTitle>{errorMessage}</ErrMsgTitle>
           <FileUpload onFileChange={handleFileChange} fileName={fileName} />
         </>
       ) : (
         <>
-          <Title>Расчет отпускных</Title>
+          <h1>Расчет отпускных</h1>
           <FileUpload onFileChange={handleFileChange} fileName={fileName} />
           {data.length > 0 && <DataTable data={data} />}
         </>
