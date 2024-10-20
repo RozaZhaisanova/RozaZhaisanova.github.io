@@ -1,3 +1,8 @@
+1. Разместить на странице кнопку для загрузки файла.
+2. Прочитать данные из файла
+3. Рассчитать по каждому человеку размер отпускных за год
+4. Вывести на странице ФИО, общий заработок и размер отпускных в виде таблицы
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
